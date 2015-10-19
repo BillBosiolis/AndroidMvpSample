@@ -10,6 +10,7 @@ public class RepositoryJson {
     public final long id;
     public final String name;
     public final String full_name;
+    @SerializedName("html_url")
     public final String htmlUrl;
     public final String description;
     public final int watchers;

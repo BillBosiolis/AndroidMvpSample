@@ -8,6 +8,7 @@ import java.util.List;
 import retrofit.Call;
 import retrofit.http.GET;
 import retrofit.http.Path;
+import retrofit.http.Query;
 
 /**
  * Created by Bill on 16/10/2015.
@@ -19,7 +20,7 @@ public interface GitHubApi {
     // https://api.github.com/repos/google/iosched/commits
 
     @GET("/orgs/google/repos?page=5")
-    Call<List<RepositoryJson>> getRepositories();
+    Call<List<RepositoryJson>> getRepositories(@Query("nocache") boolean nocache);
 
     @GET("repos/google/{repoId}/commits")
     Call<List<CommitJson>> getCommits(@Path("repoId") long repoId);

@@ -20,23 +20,30 @@ public class CommitsHandler extends JSONHandler<List<CommitJson>> {
     }
 
     @Override
-    public void makeContentProviderOperations(ArrayList<ContentProviderOperation> list, List<CommitJson> data) {
-        list.add(ContentProviderOperation.newDelete(Commits.CONTENT_URI).build());
-        for(CommitJson item : data) {
-            list.add(createCommitOperation(item));
+    public void makeContentProviderOperations(ArrayList<ContentProviderOperation> list,
+                                              List<CommitJson> data, Object... args) {
+        long repoId = (long) args[0];
+
+        list.add(ContentProviderOperation.newDelete(Commits.CONTENT_URI)
+                .withSelection(Commits.REPO_ID + "=?", new String[]{String.valueOf(repoId)})
+                .build());
+
+        for(CommitJson c : data) {
+            list.add(createCommitInsertOperation(c, repoId));
         }
     }
 
-    private ContentProviderOperation createCommitOperation(CommitJson item) {
+    private ContentProviderOperation createCommitInsertOperation(CommitJson item, long repoId) {
         ContentProviderOperation.Builder builder =
                 ContentProviderOperation.newInsert(Commits.CONTENT_URI);
         builder.withValue(Commits.COMMIT_SHA, item.sha);
         builder.withValue(Commits.COMMIT_URL, item.url);
-        builder.withValue(Commits.COMMIT_HTML_URL, item.htmlUrl);
-        builder.withValue(Commits.COMMIT_AUTHOR, item.commit.author);
+        builder.withValue(Commits.REPO_HTML_URL, item.htmlUrl);
+        builder.withValue(Commits.COMMIT_AUTHOR, item.author);
         builder.withValue(Commits.COMMIT_MESSAGE, item.commit.message);
-        builder.withValue(Commits.COMMIT_AUTHOR_DATE, item.author.date);
         builder.withValue(Commits.COMMIT_AUTHOR_NAME, item.author.name);
+        builder.withValue(Commits.COMMIT_AUTHOR_DATE, item.author.date);
+        builder.withValue(Commits.REPO_ID, repoId);
         return builder.build();
     }
 }

@@ -24,6 +24,7 @@ public class LogUtils {
     private static final int MAX_LOG_TAG_LENGTH = 23;
 
     public static boolean LOGGING_ENABLED = true;
+    public static boolean CHECK_LOGGING_TAG = false;
 
     public static String makeLogTag(String str) {
         if (str.length() > MAX_LOG_TAG_LENGTH - LOG_PREFIX_LENGTH) {
@@ -42,7 +43,10 @@ public class LogUtils {
 
     public static void LOGD(final String tag, String message) {
         if (LOGGING_ENABLED){
-            if (Log.isLoggable(tag, Log.DEBUG)) {
+            if(CHECK_LOGGING_TAG && Log.isLoggable(tag, Log.DEBUG)) {
+                Log.d(tag, message);
+            }
+            else {
                 Log.d(tag, message);
             }
         }

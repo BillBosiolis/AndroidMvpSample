@@ -13,7 +13,7 @@ import static com.example.androidmvpsample.data.provider.AppContract.*;
 public class AppDatabase extends SQLiteOpenHelper {
 
     private static final String DB_NAME = "app.db";
-    private static final int DB_VERSION = 1;
+    private static final int DB_VERSION = 3;
 
     interface Tables {
         String OWNERS = "owners";
@@ -36,15 +36,15 @@ public class AppDatabase extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE " + Tables.REPOS + " ("
                 + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-                + RepositoryColumns.REPO_ID + " INTEGER NOT NULL,"
-                + RepositoryColumns.REPO_NAME + " TEXT NOT NULL,"
-                + RepositoryColumns.REPO_FULLNAME + " TEXT NOT NULL,"
-                + RepositoryColumns.REPO_HTML_URL + " TEXT NOT NULL,"
-                + RepositoryColumns.REPO_DESCRIPTION + " TEXT NOT NULL,"
-                + RepositoryColumns.REPO_WATCHERS + " INTEGER DEFAULT 0,"
+                + RepoColumns.REPO_ID + " INTEGER NOT NULL,"
+                + RepoColumns.REPO_NAME + " TEXT NOT NULL,"
+                + RepoColumns.REPO_FULLNAME + " TEXT NOT NULL,"
+                + RepoColumns.REPO_HTML_URL + " TEXT NOT NULL,"
+                + RepoColumns.REPO_DESCRIPTION + " TEXT,"
+                + RepoColumns.REPO_WATCHERS + " INTEGER DEFAULT 0,"
                 + OwnerColumns.OWNER_ID + " INTEGER " + References.OWNER_ID + ","
                 + SyncColumns.UPDATED + " NUMBER DEFAULT 0,"
-                + "UNIQUE (" + RepositoryColumns.REPO_ID + ") ON CONFLICT REPLACE)");
+                + "UNIQUE (" + RepoColumns.REPO_ID + ") ON CONFLICT REPLACE)");
 
         db.execSQL("CREATE TABLE " + Tables.OWNERS + " ("
                 + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -55,6 +55,7 @@ public class AppDatabase extends SQLiteOpenHelper {
 
         db.execSQL("CREATE TABLE " + Tables.COMMITS + " ("
                 + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + RepoColumns.REPO_ID + " INTEGER NOT NULL,"
                 + CommitColumns.COMMIT_SHA + " TEXT NOT NULL,"
                 + CommitColumns.COMMIT_URL + " TEXT NOT NULL,"
                 + CommitColumns.COMMIT_HTML_URL + " TEXT NOT NULL,"
@@ -71,6 +72,8 @@ public class AppDatabase extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + Tables.REPOS);
         db.execSQL("DROP TABLE IF EXISTS " + Tables.OWNERS);
         db.execSQL("DROP TABLE IF EXISTS " + Tables.COMMITS);
+
+        onCreate(db);
     }
 
     public static void deleteDatabase(Context context) {

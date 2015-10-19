@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.example.androidmvpsample.utils.LogUtils;
 import com.example.androidmvpsample.utils.SelectionBuilder;
 
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ import static com.example.androidmvpsample.utils.LogUtils.LOGV;
  */
 public class AppContentProvider extends ContentProvider {
 
-    private static final String TAG = AppContentProvider.class.getName();
+    private static final String TAG = LogUtils.makeLogTag(AppContentProvider.class);
 
     private AppDatabase mOpenHelper;
 
@@ -102,6 +103,9 @@ public class AppContentProvider extends ContentProvider {
         switch (matchingUriEnum) {
             case REPOS: {
                 return Repos.buildRepoUri(values.getAsString(Repos.REPO_ID));
+            }
+            case OWNERS: {
+                return Owners.buildOwnerUri(values.getAsString(Owners.OWNER_ID));
             }
             case COMMITS: {
                 return Commits.buildCommitUri(values.getAsString(Commits.COMMIT_SHA));

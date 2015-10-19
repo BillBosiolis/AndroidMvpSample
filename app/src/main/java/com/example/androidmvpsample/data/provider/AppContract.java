@@ -21,7 +21,7 @@ public class AppContract {
         String UPDATED = "updated";
     }
 
-    interface RepositoryColumns {
+    interface RepoColumns {
         String REPO_ID = "repo_id";
         String REPO_NAME = "repo_name";
         String REPO_FULLNAME = "repo_fullname";
@@ -71,7 +71,7 @@ public class AppContract {
         }
     }
 
-    public static class Repos implements RepositoryColumns, OwnerColumns, BaseColumns, SyncColumns {
+    public static class Repos implements RepoColumns, OwnerColumns, BaseColumns, SyncColumns {
 
         public static final Uri CONTENT_URI =
                 BASE_CONTENT_URI.buildUpon().appendPath(PATH_REPOS).build();
@@ -107,7 +107,7 @@ public class AppContract {
         }
     }
 
-    public static class Commits implements CommitColumns, BaseColumns, SyncColumns {
+    public static class Commits implements CommitColumns, RepoColumns, BaseColumns, SyncColumns {
 
         public static final Uri CONTENT_URI =
                 BASE_CONTENT_URI.buildUpon().appendPath(PATH_COMMITS).build();

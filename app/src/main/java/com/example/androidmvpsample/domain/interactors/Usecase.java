@@ -8,5 +8,5 @@ package com.example.androidmvpsample.domain.interactors;
 import rx.Observable;
 
 public interface Usecase<T> {
-    Observable<T> execute();
+    Observable<T> execute(boolean forceResync, Object... args);
 }

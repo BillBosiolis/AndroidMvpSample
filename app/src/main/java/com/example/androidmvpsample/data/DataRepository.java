@@ -6,21 +6,28 @@ import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.os.RemoteException;
 
+import com.example.androidmvpsample.data.io.CommitsHandler;
 import com.example.androidmvpsample.data.io.RepositoryHandler;
 import com.example.androidmvpsample.data.rest.RestRepository;
+import com.example.androidmvpsample.data.rest.RestResponse;
+import com.example.androidmvpsample.data.rest.model.CommitJson;
 import com.example.androidmvpsample.data.rest.model.RepositoryJson;
 import com.example.androidmvpsample.domain.Repository;
 import com.example.androidmvpsample.domain.entities.Commit;
 import com.example.androidmvpsample.domain.entities.Repo;
+import com.example.androidmvpsample.utils.LogUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import rx.Observable;
 import rx.Subscriber;
 
 import static com.example.androidmvpsample.data.provider.AppContract.CONTENT_AUTHORITY;
+import static com.example.androidmvpsample.data.provider.AppContract.Commits;
 import static com.example.androidmvpsample.data.provider.AppContract.Repos;
 
 /**
@@ -28,27 +35,33 @@ import static com.example.androidmvpsample.data.provider.AppContract.Repos;
  */
 public class DataRepository implements Repository {
 
+    private static final String TAG = LogUtils.makeLogTag(DataRepository.class);
+
     private final RestRepository restRepository;
     private final Context context;
 
+    @Inject
     public DataRepository(Context context, RestRepository restRepository) {
         this.restRepository = restRepository;
         this.context = context;
     }
 
     @Override
-    public Observable<List<Repo>> getRepositories() {
+    public Observable<List<Repo>> getRepositories(final boolean forceResync) {
         return Observable.create(new Observable.OnSubscribe<List<Repo>>() {
             @Override
             public void call(Subscriber<? super List<Repo>> subscriber) {
                 try {
-                    List<RepositoryJson> jsons = restRepository.getRepositories();
+                    RestResponse<List<RepositoryJson>> jsons = restRepository.getRepositories(forceResync);
 
-                    RepositoryHandler handler = new RepositoryHandler(context);
-                    ArrayList<ContentProviderOperation> operations =
-                            new ArrayList<ContentProviderOperation>();
-                    handler.makeContentProviderOperations(operations, jsons);
-                    context.getContentResolver().applyBatch(CONTENT_AUTHORITY, operations);
+                    if(!jsons.isFromCache()) {
+                        LogUtils.LOGD(TAG, "New data from the Network. Saving them in the database");
+                        RepositoryHandler handler = new RepositoryHandler(context);
+                        ArrayList<ContentProviderOperation> operations =
+                                new ArrayList<ContentProviderOperation>();
+                        handler.makeContentProviderOperations(operations, jsons.getData());
+                        context.getContentResolver().applyBatch(CONTENT_AUTHORITY, operations);
+                    }
 
                     List<Repo> repos = new ArrayList<Repo>();
 
@@ -69,6 +82,10 @@ public class DataRepository implements Repository {
                         } while (cursor.moveToNext());
                     }
 
+                    if(cursor != null) {
+                        cursor.close();
+                    }
+
                     subscriber.onNext(repos);
                     subscriber.onCompleted();
                 } catch (IOException e) {
@@ -76,9 +93,8 @@ public class DataRepository implements Repository {
                     subscriber.onError(e);
                 } catch (RemoteException e) {
                     e.printStackTrace();
-                } catch (OperationApplicationException e) {
-                    e.printStackTrace();
-                    subscriber.onError(e);
+                } catch (Exception e) {
+                    LogUtils.LOGE(TAG, e.getMessage(), e);
                 }
             }
         });
@@ -90,8 +106,54 @@ public class DataRepository implements Repository {
     }
 
     @Override
-    public Observable<List<Commit>> getCommits(long repoId) {
-        return null;
+    public Observable<List<Commit>> getCommits(final long repoId) {
+        return Observable.create(new Observable.OnSubscribe<List<Commit>>() {
+            @Override
+            public void call(Subscriber<? super List<Commit>> subscriber) {
+                try {
+                    RestResponse<List<CommitJson>> restResponse = restRepository.getCommits(repoId);
+
+                    if(!restResponse.isFromCache()) {
+                        CommitsHandler handler = new CommitsHandler(context);
+                        ArrayList<ContentProviderOperation> operations =
+                                new ArrayList<ContentProviderOperation>();
+                        handler.makeContentProviderOperations(operations, restResponse.getData());
+                        context.getContentResolver().applyBatch(CONTENT_AUTHORITY, operations);
+                    }
+
+                    List<Commit> commits = new ArrayList<Commit>();
+
+                    Cursor cursor = context.getContentResolver().query(
+                            Commits.CONTENT_URI,
+                            CommitQuery.PROJECTION,
+                            Commits.REPO_ID + "=?",
+                            new String[] { String.valueOf(repoId)},
+                            null);
+
+                    if(cursor != null && cursor.moveToFirst()) {
+                        do {
+                            commits.add(new Commit(
+                                    cursor.getString(CommitQuery.COMMIT_SHA),
+                                    cursor.getString(CommitQuery.COMMIT_URL),
+                                    cursor.getString(CommitQuery.COMMIT_HTML_URL),
+                                    cursor.getString(CommitQuery.COMMIT_MESSAGE),
+                                    cursor.getString(CommitQuery.COMMIT_AUTHOR_NAME),
+                                    cursor.getString(CommitQuery.COMMIT_AUTHOR_DATE)));
+                        } while(cursor.moveToNext());
+                    }
+
+                    if(cursor != null) {
+                        cursor.close();
+                    }
+
+                    subscriber.onNext(commits);
+                    subscriber.onCompleted();
+                } catch (IOException | RemoteException | OperationApplicationException e) {
+                    LogUtils.LOGE(TAG, e.getMessage(), e);
+                    subscriber.onError(e);
+                }
+            }
+        });
     }
 
     @Override
@@ -117,5 +179,23 @@ public class DataRepository implements Repository {
         int REPO_DESCRIPTION = 4;
         int REPO_WATCHERS = 5;
         int OWNER_AVATAR = 6;
+    }
+
+    interface CommitQuery {
+        String[] PROJECTION = new String[] {
+                Commits.COMMIT_SHA,
+                Commits.COMMIT_URL,
+                Commits.COMMIT_HTML_URL,
+                Commits.COMMIT_MESSAGE,
+                Commits.COMMIT_AUTHOR_NAME,
+                Commits.COMMIT_AUTHOR_DATE
+        };
+
+        int COMMIT_SHA = 0;
+        int COMMIT_URL = 1;
+        int COMMIT_HTML_URL = 2;
+        int COMMIT_MESSAGE = 3;
+        int COMMIT_AUTHOR_NAME = 4;
+        int COMMIT_AUTHOR_DATE = 5;
     }
 }

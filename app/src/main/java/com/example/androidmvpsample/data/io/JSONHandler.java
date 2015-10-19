@@ -29,5 +29,7 @@ public abstract class JSONHandler<T> {
         mContext = context;
     }
 
-    public abstract void makeContentProviderOperations(ArrayList<ContentProviderOperation> list, T data);
+    public abstract void makeContentProviderOperations(ArrayList<ContentProviderOperation> list,
+                                                       T data,
+                                                       Object... args);
 }

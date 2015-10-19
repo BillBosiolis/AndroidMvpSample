@@ -12,7 +12,7 @@ import rx.Observable;
  */
 public interface Repository {
 
-    Observable<List<Repo>> getRepositories();
+    Observable<List<Repo>> getRepositories(boolean forceResync);
     Observable<Repo> getRepository(long repoId);
     Observable<List<Commit>> getCommits(long repoId);
     Observable<Commit> getCommit(String sha);
