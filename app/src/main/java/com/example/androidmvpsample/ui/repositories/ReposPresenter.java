@@ -16,17 +16,17 @@ import rx.Subscription;
 /**
  * Created by Bill on 16/10/2015.
  */
-public class RepositoriesPresenter implements Presenter {
+public class ReposPresenter implements Presenter {
 
-    private static final String TAG = LogUtils.makeLogTag(RepositoriesPresenter.class);
+    private static final String TAG = LogUtils.makeLogTag(ReposPresenter.class);
 
     Context mContext;
     GetRepositoriesUseCase mUseCase;
-    RepositoriesView mView;
+    ReposView mView;
     Subscription mGetRepositoriesSubscription;
 
     @Inject
-    public RepositoriesPresenter(Context context, GetRepositoriesUseCase useCase) {
+    public ReposPresenter(Context context, GetRepositoriesUseCase useCase) {
         this.mContext = context;
         this.mUseCase = useCase;
     }
@@ -50,7 +50,7 @@ public class RepositoriesPresenter implements Presenter {
 
     @Override
     public void attachView(MvpView v) {
-        mView = (RepositoriesView) v;
+        mView = (ReposView) v;
     }
 
     @Override
@@ -77,9 +77,10 @@ public class RepositoriesPresenter implements Presenter {
                 });
     }
 
-    public void onRepoClicked(long repoId) {
-        Intent intent = new Intent(mView.getContext(), CommitsActivity.class);
+    public void onRepoClicked(long repoId, String name) {
+        Intent intent = new Intent(mView.getContext(), RepoCommitsActivity.class);
         intent.putExtra("repoId", repoId);
+        intent.putExtra("repoName", name);
         mView.getContext().startActivity(intent);
     }
 }

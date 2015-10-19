@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">AndroidMvpSample</string>
     <string name="action_settings">Settings</string>
+
+    <string name="title_repos">Google Repositories</string>
+    <string name="title_commits">Repo Commits</string>
 </resources>

@@ -8,7 +8,7 @@ import com.example.androidmvpsample.R;
 /**
  * Created by Bill on 19/10/2015.
  */
-public class CommitsActivity extends AppCompatActivity {
+public class RepoCommitsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -16,7 +16,9 @@ public class CommitsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_commits);
 
         long repoId = getIntent().getLongExtra("repoId", 0);
+        String repoName = getIntent().getStringExtra("repoName");
         getSupportFragmentManager().beginTransaction()
-                .add(R.id.fragment_container, CommitsFragment.newInstance(repoId));
+                .add(R.id.fragment_container, RepoCommitsFragment.newInstance(repoId, repoName))
+                .commit();
     }
 }

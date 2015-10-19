@@ -13,7 +13,7 @@ import static com.example.androidmvpsample.data.provider.AppContract.*;
 public class AppDatabase extends SQLiteOpenHelper {
 
     private static final String DB_NAME = "app.db";
-    private static final int DB_VERSION = 3;
+    private static final int DB_VERSION = 5;
 
     interface Tables {
         String OWNERS = "owners";
@@ -59,10 +59,9 @@ public class AppDatabase extends SQLiteOpenHelper {
                 + CommitColumns.COMMIT_SHA + " TEXT NOT NULL,"
                 + CommitColumns.COMMIT_URL + " TEXT NOT NULL,"
                 + CommitColumns.COMMIT_HTML_URL + " TEXT NOT NULL,"
-                + CommitColumns.COMMIT_AUTHOR + " TEXT NOT NULL,"
                 + CommitColumns.COMMIT_MESSAGE + " TEXT NOT NULL,"
-                + CommitColumns.COMMIT_AUTHOR_NAME + " TEXT NOT NULL,"
-                + CommitColumns.COMMIT_AUTHOR_DATE + " TEXT NOT NULL,"
+                + CommitColumns.COMMIT_AUTHOR_NAME + " TEXT,"
+                + CommitColumns.COMMIT_AUTHOR_DATE + " TEXT,"
                 + SyncColumns.UPDATED + " NUMBER DEFAULT 0,"
                 + "UNIQUE (" + CommitColumns.COMMIT_SHA + ") ON CONFLICT REPLACE)");
     }

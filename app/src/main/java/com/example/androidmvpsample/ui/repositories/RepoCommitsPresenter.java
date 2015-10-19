@@ -18,17 +18,17 @@ import rx.Subscription;
 /**
  * Created by Bill on 19/10/2015.
  */
-public class CommitsPresenter implements Presenter {
+public class RepoCommitsPresenter implements Presenter {
 
-    private static final String TAG = LogUtils.makeLogTag(CommitsPresenter.class);
+    private static final String TAG = LogUtils.makeLogTag(RepoCommitsPresenter.class);
 
     Context mContext;
     GetCommitsUseCase mUseCase;
-    CommitsView mView;
+    RepoCommitsView mView;
     Subscription mGetCommitsUseCaseSubscription;
 
     @Inject
-    public CommitsPresenter(Context context, GetCommitsUseCase useCase) {
+    public RepoCommitsPresenter(Context context, GetCommitsUseCase useCase) {
         this.mContext = context;
         this.mUseCase = useCase;
     }
@@ -51,14 +51,14 @@ public class CommitsPresenter implements Presenter {
 
     @Override
     public void attachView(MvpView v) {
-        mView = (CommitsView) v;
+        mView = (RepoCommitsView) v;
     }
 
     @Override
     public void loadData(boolean forceSync, Object... args) {
         mView.showLoading();
 
-        mGetCommitsUseCaseSubscription = mUseCase.execute(forceSync, (long) args[0])
+        mGetCommitsUseCaseSubscription = mUseCase.execute(forceSync, args)
                 .subscribe(new Observer<List<Commit>>() {
                     @Override
                     public void onCompleted() {
@@ -72,8 +72,8 @@ public class CommitsPresenter implements Presenter {
                     }
 
                     @Override
-                    public void onNext(List<Commit> repos) {
-                        mView.setData(repos);
+                    public void onNext(List<Commit> commits) {
+                        mView.setData(commits);
                         mView.showContent();
                     }
                 });

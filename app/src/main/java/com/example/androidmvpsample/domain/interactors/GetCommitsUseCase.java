@@ -23,7 +23,8 @@ public class GetCommitsUseCase implements Usecase<List<Commit>> {
     @Override
     public Observable<List<Commit>> execute(boolean forceResync, Object... args) {
         long repoId = (long) args[0];
-        return repository.getCommits(repoId)
+        String repoName = (String) args[1];
+        return repository.getCommits(forceResync, repoId, repoName)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }

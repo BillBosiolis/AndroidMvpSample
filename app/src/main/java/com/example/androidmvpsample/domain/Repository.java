@@ -14,7 +14,7 @@ public interface Repository {
 
     Observable<List<Repo>> getRepositories(boolean forceResync);
     Observable<Repo> getRepository(long repoId);
-    Observable<List<Commit>> getCommits(long repoId);
+    Observable<List<Commit>> getCommits(boolean forceResync, long repoId, String repoName);
     Observable<Commit> getCommit(String sha);
 
 }
