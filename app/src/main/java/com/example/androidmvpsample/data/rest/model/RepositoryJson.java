@@ -27,15 +27,4 @@ public class RepositoryJson {
         this.owner = owner;
     }
 
-    public class RepositoryOwnerJson {
-
-        public final long id;
-        @SerializedName("avatar_url")
-        public final String avatarUrl;
-
-        public RepositoryOwnerJson(long id, String avatarUrl) {
-            this.id = id;
-            this.avatarUrl = avatarUrl;
-        }
-    }
 }

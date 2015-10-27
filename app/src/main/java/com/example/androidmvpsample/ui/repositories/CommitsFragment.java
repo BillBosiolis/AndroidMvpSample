@@ -11,10 +11,8 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.example.androidmvpsample.R;
-import com.example.androidmvpsample.ReposApplication;
-import com.example.androidmvpsample.di.component.DaggerRepositoriesComponent;
-import com.example.androidmvpsample.di.module.ActivityModule;
-import com.example.androidmvpsample.di.module.RepositoriesModule;
+import com.example.androidmvpsample.di.HasComponent;
+import com.example.androidmvpsample.di.component.RepositoriesComponent;
 import com.example.androidmvpsample.domain.entities.Commit;
 import com.example.androidmvpsample.ui.adapter.CommitsAdapter;
 import com.example.androidmvpsample.utils.LogUtils;
@@ -121,14 +119,21 @@ public class CommitsFragment extends Fragment implements CommitsView {
     }
 
     private void injectDependencies() {
-        ReposApplication reposApplication = (ReposApplication) getActivity().getApplication();
+        // Option A
+        RepositoriesComponent comp = ((HasComponent<RepositoriesComponent>) getActivity()).getComponent();
+        comp.inject(this);
+
+        // Option B
+        /*ReposApplication reposApplication = (ReposApplication) getActivity().getApplication();
         DaggerRepositoriesComponent.builder()
                 .appComponent(reposApplication.getAppComponent())
                 .activityModule(new ActivityModule(getActivity()))
                 .repositoriesModule(new RepositoriesModule())
                 .build()
-                .inject(this);
+                .inject(this);*/
     }
 
-
+    private <C> C getComponent(Class<C> componentType) {
+        return componentType.cast(((HasComponent<C>) getActivity()).getComponent());
+    }
 }
