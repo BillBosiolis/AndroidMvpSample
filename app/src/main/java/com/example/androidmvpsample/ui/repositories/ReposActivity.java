@@ -22,13 +22,13 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-public class RepositoriesActivity extends AppCompatActivity implements
-        RepositoriesView, SwipeRefreshLayout.OnRefreshListener {
+public class ReposActivity extends AppCompatActivity implements
+        ReposView, SwipeRefreshLayout.OnRefreshListener {
 
-    private static final String TAG = LogUtils.makeLogTag(RepositoriesActivity.class);
+    private static final String TAG = LogUtils.makeLogTag(ReposActivity.class);
 
     @Inject
-    RepositoriesPresenter mPresenter;
+    ReposPresenter mPresenter;
 
     private SwipeRefreshLayout mSwipeRefresh;
     private RecyclerView mRecyclerView;
@@ -90,8 +90,8 @@ public class RepositoriesActivity extends AppCompatActivity implements
             @Override
             public void onRepoClicked(int position) {
                 LogUtils.LOGD(TAG, "Clickced at postion " + position);
-                long repoId = data.get(position).id;
-                mPresenter.onRepoClicked(repoId);
+                Repo repo = data.get(position);
+                mPresenter.onRepoClicked(repo.id, repo.name);
             }
         });
         mRecyclerView.setAdapter(mAdapter);

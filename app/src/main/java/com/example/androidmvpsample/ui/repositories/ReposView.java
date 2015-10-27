@@ -8,5 +8,5 @@ import java.util.List;
 /**
  * Created by Bill on 16/10/2015.
  */
-public interface RepositoriesView extends MvpDataView<List<Repo>> {
+public interface ReposView extends MvpDataView<List<Repo>> {
 }

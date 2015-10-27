@@ -142,8 +142,8 @@ public class RestRepositoryTest2 {
         }
 
         @Override
-        public Call<List<CommitJson>> getCommits(@Path("repoId") long repoId) {
-            return api.getCommits(repoId);
+        public Call<List<CommitJson>> getCommits(@Path("repoName") String repoName, @Query("nocache") boolean nocache) {
+            return api.getCommits(repoName, nocache);
         }
     }
 }

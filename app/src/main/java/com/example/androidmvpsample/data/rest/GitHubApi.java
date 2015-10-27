@@ -19,9 +19,9 @@ public interface GitHubApi {
     // https://api.github.com/orgs/google/repos?page=5
     // https://api.github.com/repos/google/iosched/commits
 
-    @GET("/orgs/google/repos?page=5")
+    @GET("orgs/google/repos?page=5")
     Call<List<RepositoryJson>> getRepositories(@Query("nocache") boolean nocache);
 
-    @GET("repos/google/{repoId}/commits")
-    Call<List<CommitJson>> getCommits(@Path("repoId") long repoId);
+    @GET("repos/google/{repoName}/commits")
+    Call<List<CommitJson>> getCommits(@Path("repoName") String repoName, @Query("nocache") boolean nocache);
 }

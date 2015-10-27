@@ -38,11 +38,10 @@ public class CommitsHandler extends JSONHandler<List<CommitJson>> {
                 ContentProviderOperation.newInsert(Commits.CONTENT_URI);
         builder.withValue(Commits.COMMIT_SHA, item.sha);
         builder.withValue(Commits.COMMIT_URL, item.url);
-        builder.withValue(Commits.REPO_HTML_URL, item.htmlUrl);
-        builder.withValue(Commits.COMMIT_AUTHOR, item.author);
+        builder.withValue(Commits.COMMIT_HTML_URL, item.htmlUrl);
         builder.withValue(Commits.COMMIT_MESSAGE, item.commit.message);
-        builder.withValue(Commits.COMMIT_AUTHOR_NAME, item.author.name);
-        builder.withValue(Commits.COMMIT_AUTHOR_DATE, item.author.date);
+        builder.withValue(Commits.COMMIT_AUTHOR_NAME, item.commit.author.name);
+        builder.withValue(Commits.COMMIT_AUTHOR_DATE, item.commit.author.date);
         builder.withValue(Commits.REPO_ID, repoId);
         return builder.build();
     }

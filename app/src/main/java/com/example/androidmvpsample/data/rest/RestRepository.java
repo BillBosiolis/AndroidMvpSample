@@ -37,8 +37,8 @@ public class RestRepository {
         }
     }
 
-    public RestResponse<List<CommitJson>> getCommits(long repoId) throws IOException {
-        Call<List<CommitJson>> call = gitHubApi.getCommits(repoId);
+    public RestResponse<List<CommitJson>> getCommits(boolean forceResync, String repoName) throws IOException {
+        Call<List<CommitJson>> call = gitHubApi.getCommits(repoName, forceResync);
         retrofit.Response<List<CommitJson>> response = call.execute();
         if(isCachedResponse(response.raw())) {
             return new RestResponse<>(true, null);

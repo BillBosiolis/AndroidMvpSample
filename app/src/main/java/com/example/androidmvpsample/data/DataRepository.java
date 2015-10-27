@@ -106,18 +106,18 @@ public class DataRepository implements Repository {
     }
 
     @Override
-    public Observable<List<Commit>> getCommits(final long repoId) {
+    public Observable<List<Commit>> getCommits(final boolean forceResync, final long repoId, final String repoName) {
         return Observable.create(new Observable.OnSubscribe<List<Commit>>() {
             @Override
             public void call(Subscriber<? super List<Commit>> subscriber) {
                 try {
-                    RestResponse<List<CommitJson>> restResponse = restRepository.getCommits(repoId);
+                    RestResponse<List<CommitJson>> restResponse = restRepository.getCommits(forceResync, repoName);
 
                     if(!restResponse.isFromCache()) {
                         CommitsHandler handler = new CommitsHandler(context);
                         ArrayList<ContentProviderOperation> operations =
                                 new ArrayList<ContentProviderOperation>();
-                        handler.makeContentProviderOperations(operations, restResponse.getData());
+                        handler.makeContentProviderOperations(operations, restResponse.getData(), repoId);
                         context.getContentResolver().applyBatch(CONTENT_AUTHORITY, operations);
                     }
 
@@ -126,8 +126,7 @@ public class DataRepository implements Repository {
                     Cursor cursor = context.getContentResolver().query(
                             Commits.CONTENT_URI,
                             CommitQuery.PROJECTION,
-                            Commits.REPO_ID + "=?",
-                            new String[] { String.valueOf(repoId)},
+                            Commits.REPO_ID + "=?", new String[] { String.valueOf(repoId) },
                             null);
 
                     if(cursor != null && cursor.moveToFirst()) {

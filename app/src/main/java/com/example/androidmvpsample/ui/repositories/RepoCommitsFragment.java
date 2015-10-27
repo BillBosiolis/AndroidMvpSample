@@ -21,36 +21,42 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import static com.example.androidmvpsample.utils.LogUtils.*;
+
 /**
  * Created by Bill on 19/10/2015.
  */
-public class CommitsFragment extends Fragment implements CommitsView {
+public class RepoCommitsFragment extends Fragment implements RepoCommitsView {
 
-    public static CommitsFragment newInstance(long repoId) {
-        CommitsFragment fragment = new CommitsFragment();
+    public static RepoCommitsFragment newInstance(long repoId, String repoName) {
+        RepoCommitsFragment fragment = new RepoCommitsFragment();
         Bundle args = new Bundle();
         args.putLong("repoId", repoId);
+        args.putString("repoName", repoName);
         fragment.setArguments(args);
         return fragment;
     }
 
 
-    private static final String TAG = LogUtils.makeLogTag(CommitsFragment.class);
+    private static final String TAG = makeLogTag(RepoCommitsFragment.class);
 
     @Inject
-    CommitsPresenter mPresenter;
+    RepoCommitsPresenter mPresenter;
 
     private RecyclerView mRecyclerView;
     private View mError;
     private ProgressBar mProgressBar;
     private CommitsAdapter mAdapter;
     private long mRepoId;
+    private String mRepoName;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         mRepoId = getArguments().getLong("repoId");
+        mRepoName = getArguments().getString("repoName");
+        LOGD(TAG, "RepoId: " + mRepoId + ", Name: " + mRepoName);
     }
 
     @Nullable
@@ -72,7 +78,7 @@ public class CommitsFragment extends Fragment implements CommitsView {
         setupRecyclerView();
         injectDependencies();
         mPresenter.attachView(this);
-        mPresenter.loadData(true, mRepoId);
+        mPresenter.loadData(true, mRepoId, mRepoName);
     }
 
     @Override

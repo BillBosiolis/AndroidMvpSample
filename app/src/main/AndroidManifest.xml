@@ -12,8 +12,8 @@
         android:theme="@style/AppTheme"
         android:name=".ReposApplication">
         <activity
-            android:name=".ui.repositories.RepositoriesActivity"
-            android:label="@string/app_name"
+            android:name=".ui.repositories.ReposActivity"
+            android:label="@string/title_repos"
             android:theme="@style/AppTheme.NoActionBar" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,7 +22,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.repositories.CommitsActivity" />
+        <activity android:name=".ui.repositories.RepoCommitsActivity"
+            android:label="@string/title_commits" />
 
         <provider
             android:authorities="com.example.androidmvpsample"
